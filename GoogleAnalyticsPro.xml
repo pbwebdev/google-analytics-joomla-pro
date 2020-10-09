@@ -1,26 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="system" method="upgrade">
-    <name>System - Google Analytics</name>
+    <name>System - Google Analytics Pro</name>
     <author>Peter Bui</author>
     <creationDate>19th April 2010</creationDate>
     <authorEmail>mail@pbwebdev.com.au</authorEmail>
     <authorUrl>https://pbwebdev.com</authorUrl>
-    <version>5.0.1</version>
+    <version>5.0.0</version>
     <copyright>Copyright (c) 2020 PB Web Development. All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <description>
         <![CDATA[
+        <h2 style="text-align:left">
+            Google Analytics Pro
+        </h2>
         <p style="text-align:left">
             Updated to use Global Site Tag (gtag.js) version of Google Analytics and Google Tag Manager. According to Google, the universal and asynchronous versions may no longer work.
         </p>
         <p style="text-align:left">
             This plugin will allow you to use both or either methods, Google Analytics global site tag, or Google Tag Manager. We've also included the HTML meta tag method of verifying your websites in Google Webmaster Console.
-        </p>
-
-        <h2 style="text-align:left">Upgrade to PRO</h2>
-
-        <p style="text-align:left">
-        You can also upgrade to <a href="http://nicheextensions.com/extensions/google-analytics-joomla/" taget="_blank"><strong>Google Analytics PRO</strong></a> for more features and fine tuning of your analytics.
         </p>
 
         <h2 style="text-align:left">Documentation</h2>
@@ -43,23 +40,47 @@
         ]]>
     </description>
     <files>
-        <filename plugin="GoogleAnalytics">GoogleAnalytics.php</filename>
+        <filename plugin="GoogleAnalyticsPro">GoogleAnalyticsPro.php</filename>
         <filename>index.html</filename>
         <folder>language</folder>
     </files>
     <languages>
-        <language tag="en-GB">language/en-GB.plg_system_GoogleAnalytics.ini</language>
+        <language tag="en-GB">language/en-GB.plg_system_GoogleAnalyticsPro.ini</language>
     </languages>
     <config>
         <fields name="params">
             <fieldset name="Basic">
                 <field name="verify" type="text" default="" label="GAANALYTICS_VERIFY_LABEL"  description="GAANALYTICS_VERIFY_DESCRIPTION"></field>
                 <field name="trackingID" type="text" default="" label="GAANALYTICS_TRACKINGID_LABEL" description="GAANALYTICS_TRACKINGID_DESCRIPTION"></field>
+                <field name="trackingID2" type="text" default="" label="GAANALYTICS_TRACKINGID2_LABEL" description="GAANALYTICS_TRACKINGID2_DESCRIPTION"></field>
                 <field name="containerID" type="text" default="" label="GAANALYTICS_CONTAINERID_LABEL" description="GAANALYTICS_CONTAINERID_DESCRIPTION"></field>
+            </fieldset>
+            <fieldset name="Advanced">
+                <field name="userIDTracking" type="radio" default="0" label="GAANALYTICS_USERID_LABEL"  description="GAANALYTICS_USERID_DESCRIPTION" class="btn-group btn-group-yesno">
+                    <option value="0">Off</option>
+                    <option value="1">On</option>
+                </field>
+                <field name="pageviewTracking" type="radio" default="0" label="GAANALYTICS_PAGEVIEW_LABEL"  description="GAANALYTICS_PAGEVIEW_DESCRIPTION" class="btn-group btn-group-yesno">
+                    <option value="0">Off</option>
+                    <option value="1">On</option>
+                </field>
+                <field name="siteCurrency" type="text" default="" label="GAANALYTICS_SITECURRENCY_LABEL" description="GAANALYTICS_SITECURRENCY_DESCRIPTION"></field>
+                <field name="userPerformanceTiming" type="radio" default="0" label="GAANALYTICS_USERPERFORMANCETIMING_LABEL"  description="GAANALYTICS_USERPERFORMANCETIMING_DESCRIPTION" class="btn-group btn-group-yesno">
+                    <option value="0">Off</option>
+                    <option value="1">On</option>
+                </field>
+                <field name="enhancedLinkAttribution" type="radio" default="0" label="GAANALYTICS_ENHANCEDLINK_LABEL"  description="GAANALYTICS_ENHANCEDLINK_DESCRIPTION" class="btn-group btn-group-yesno">
+                    <option value="0">Off</option>
+                    <option value="1">On</option>
+                </field>
+                <field name="ipAnonymize" type="radio" default="0" label="GAANALYTICS_IPANONYMIZE_LABEL"  description="GAANALYTICS_IPANONYMIZE_DESCRIPTION" class="btn-group btn-group-yesno">
+                    <option value="0">Off</option>
+                    <option value="1">On</option>
+                </field>
             </fieldset>
         </fields>
     </config>
     <updateservers>
-        <server type="extension" priority="1" name="Niche Extensions - Google Analytics Joomla">https://joomlaupdates.nicheextensions.com/updates/google-analytics-joomla.xml</server>
+        <server type="extension" priority="1" name="Niche Extensions - Google Analytics Joomla PRO">https://joomlaupdates.nicheextensions.com/updates/google-analytics-joomla-pro.xml</server>
     </updateservers>
 </extension>

@@ -1,9 +1,9 @@
 <?php
 /**
- * @version    $version 5.0.1 Peter Bui  $
+ * @version    $version 5.0.0 Peter Bui  $
  * @copyright    Copyright (C) 2020 PB Web Development. All rights reserved.
  * @license - http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * Updated    6th September 2020
+ * Updated    6th October 2020
  *
  * Twitter: @astroboysoup
  * Blog: https://pbwebdev.com
@@ -21,17 +21,26 @@
 defined('_JEXEC') or die('Restricted access');
 
 
-class plgSystemGoogleAnalytics extends JPlugin {
+class plgSystemGoogleAnalyticsPro extends JPlugin {
 
 	var $document = null;
 	private $verify = null;
 	private $trackingID = null;
+	private $trackingID2 = null;
 	private $containerID = null;
+
+	private $userIDTracking = null;
+	private $pageviewTrackingD = null;
+	private $siteCurrency = null;
+	private $userPerformanceTiming = null;
+	private $enhancedLinkAttribution = null;
+	private $ipAnonymize = null;
+
 	private $buffer = null;
 	private $output = null;
 	protected $app;
 
-	function plgGoogleAnalytics( $subject, $params)
+	function plgGoogleAnalyticsPro( $subject, $params)
 	{
 		parent::__construct($subject, $params);
 	}
@@ -81,6 +90,63 @@ class plgSystemGoogleAnalytics extends JPlugin {
 		';
 		return $this->buffer;
 	}
+
+
+
+
+	private function userIDTracking() {
+		$this->verify = $this->params->get('userIDTracking');
+		$userID = '1';
+		$this->buffer = "gtag('set', {'user_id': '".$userID."'});
+		";
+		return $this->buffer;
+	}
+
+
+	private function pageviewTrackingD() {
+		$this->verify = $this->params->get('pageviewTrackingD');
+		$this->buffer = '<meta name="google-site-verification" content="'.$this->verify.'" />
+		';
+		return $this->buffer;
+	}
+
+	private function siteCurrency() {
+		$this->verify = $this->params->get('siteCurrency');
+		$this->buffer = '<meta name="google-site-verification" content="'.$this->verify.'" />
+		';
+		return $this->buffer;
+	}
+
+	private function userPerformanceTiming() {
+		$this->verify = $this->params->get('userPerformanceTiming');
+		$this->buffer = '<meta name="google-site-verification" content="'.$this->verify.'" />
+		';
+		return $this->buffer;
+	}
+
+	private function enhancedLinkAttribution() {
+		$this->verify = $this->params->get('enhancedLinkAttribution');
+		$this->buffer = '<meta name="google-site-verification" content="'.$this->verify.'" />
+		';
+		return $this->buffer;
+	}
+
+
+
+
+	private function ipAnonymize() {
+		$this->verify = $this->params->get('ipAnonymize');
+		$this->buffer = '<meta name="google-site-verification" content="'.$this->verify.'" />
+		';
+		return $this->buffer;
+	}
+
+
+
+
+
+
+
 
 	private function googleAnalyticsTag() {
 		$this->trackingID = $this->params->get('trackingID');
