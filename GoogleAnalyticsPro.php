@@ -30,7 +30,8 @@ class plgSystemGoogleAnalyticsPro extends JPlugin {
 	private $containerID = null;
 
 	private $userIDTracking = null;
-	private $pageviewTrackingD = null;
+	private $forceSLL = null;
+	private $pageviewTracking = null;
 	private $siteCurrency = null;
 	private $userPerformanceTiming = null;
 	private $enhancedLinkAttribution = null;
@@ -57,7 +58,7 @@ class plgSystemGoogleAnalyticsPro extends JPlugin {
 			$this->output .= $this->webmasterVerify();
 		}
 
-		if($this->params->get('trackingID')) {
+		if($this->params->get('trackingID')||$this->params->get('trackingID2')) {
 			$this->output .= $this->googleAnalyticsTag();
 		}
 
@@ -87,77 +88,120 @@ class plgSystemGoogleAnalyticsPro extends JPlugin {
 	private function webmasterVerify() {
 		$this->verify = $this->params->get('verify');
 		$this->buffer = '<meta name="google-site-verification" content="'.$this->verify.'" />
-		';
+	';
 		return $this->buffer;
 	}
-
-
-
 
 	private function userIDTracking() {
-		$this->verify = $this->params->get('userIDTracking');
-		$userID = '1';
-		$this->buffer = "gtag('set', {'user_id': '".$userID."'});
-		";
-		return $this->buffer;
+		$user = JFactory::getUser();
+		$userID = $user->id;
+		if($userID){
+			return 'gtag(\'set\', {\'user_id\': \''.$userID.'\'});
+	';
+		}
 	}
 
+	private function forceSSL() {
+		return 'gtag(\'config\', {\'forceSSL\': true }} );
+	';
+	}
 
-	private function pageviewTrackingD() {
-		$this->verify = $this->params->get('pageviewTrackingD');
-		$this->buffer = '<meta name="google-site-verification" content="'.$this->verify.'" />
-		';
-		return $this->buffer;
+	private function pageviewTracking() {
+		return 'gtag(\'config\', {\'send_page_view\': false} );
+	';
 	}
 
 	private function siteCurrency() {
-		$this->verify = $this->params->get('siteCurrency');
-		$this->buffer = '<meta name="google-site-verification" content="'.$this->verify.'" />
-		';
-		return $this->buffer;
+		return 'gtag(\'config\', {\'currency\': \''.$this->siteCurrency.'\'});
+	';
+
 	}
 
 	private function userPerformanceTiming() {
-		$this->verify = $this->params->get('userPerformanceTiming');
-		$this->buffer = '<meta name="google-site-verification" content="'.$this->verify.'" />
-		';
-		return $this->buffer;
+			return 'if (window.performance) {
+	var timeSincePageLoad = Math.round(performance.now());
+		gtag(\'event\', \'timing_complete\', {
+		    \'name\': \'load\',
+		    \'value\': timeSincePageLoad,
+		    \'event_category\': \'JS Dependencies\'
+	    });
+    }
+    ';
 	}
 
 	private function enhancedLinkAttribution() {
-		$this->verify = $this->params->get('enhancedLinkAttribution');
-		$this->buffer = '<meta name="google-site-verification" content="'.$this->verify.'" />
-		';
-		return $this->buffer;
+		return 'gtag(\'config\', {\'link_attribution\': true} );
+	';
 	}
-
-
-
 
 	private function ipAnonymize() {
-		$this->verify = $this->params->get('ipAnonymize');
-		$this->buffer = '<meta name="google-site-verification" content="'.$this->verify.'" />
-		';
-		return $this->buffer;
+		return 'gtag(\'config\', {\'anonymize_ip\': true} );
+	';
 	}
 
-
-
-
-
-
-
+	private function isLoggedIn()
+	{
+		if(JFactory::getUser()->id){
+			return true;
+		};
+		return false;
+	}
 
 	private function googleAnalyticsTag() {
-		$this->trackingID = $this->params->get('trackingID');
-		$this->buffer = '
+	$this->trackingID = $this->params->get('trackingID');
+	$this->trackingID2 = $this->params->get('trackingID2');
+	$this->userIDTracking = $this->params->get('userIDTracking');
+	$this->forceSSL = $this->params->get('forceSSL');
+	$this->pageviewTracking = $this->params->get('pageviewTracking');
+	$this->siteCurrency = $this->params->get('siteCurrency');
+	$this->enhancedLinkAttribution = $this->params->get('enhancedLinkAttribution');
+	$this->userPerformanceTiming = $this->params->get('userPerformanceTiming');
+	$this->ipAnonymize = $this->params->get('ipAnonymize');
+
+	$this->buffer = '
 	<script async src="https://www.googletagmanager.com/gtag/js?id='.$this->trackingID.'"></script>
 	<script>
-	  window.dataLayer = window.dataLayer || [];
-	  function gtag(){dataLayer.push(arguments);}
-	  gtag(\'js\', new Date());
-	  gtag(\'config\', \''.$this->trackingID.'\');
-	</script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag(\'js\', new Date());
+	';
+
+	if($this->userIDTracking && $this->isLoggedIn()){
+		$this->buffer .= $this->userIDTracking();
+	}
+
+	if($this->pageviewTracking){
+		$this->buffer .= $this->pageviewTracking();
+	}
+
+	if($this->siteCurrency){
+		$this->buffer .= $this->siteCurrency();
+	}
+
+	if($this->userPerformanceTiming){
+		$this->buffer .= $this->userPerformanceTiming();
+	}
+
+	if($this->enhancedLinkAttribution){
+		$this->buffer .= $this->enhancedLinkAttribution();
+	}
+
+	if($this->ipAnonymize){
+	  $this->buffer .= $this->ipAnonymize();
+	}
+
+	if($this->forceSSL){
+	  $this->buffer .= $this->forceSSL();
+	}
+
+	  $this->buffer .= 'gtag(\'config\', \''.$this->trackingID.'\');
+';
+
+	if($this->trackingID2){
+		$this->buffer .= 'gtag(\'config\', \''.$this->trackingID2.'\');';
+	}
+
+	$this->buffer .= '</script>
 		';
 		return $this->buffer;
 	}

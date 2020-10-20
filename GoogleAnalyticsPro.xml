@@ -64,7 +64,7 @@
                     <option value="0">Off</option>
                     <option value="1">On</option>
                 </field>
-                <field name="siteCurrency" type="text" default="" label="GAANALYTICS_SITECURRENCY_LABEL" description="GAANALYTICS_SITECURRENCY_DESCRIPTION"></field>
+                <field name="siteCurrency" type="text" default="" label="GAANALYTICS_SITECURRENCY_LABEL" description="GAANALYTICS_SITECURRENCY_DESCRIPTION" placeholder="USD"></field>
                 <field name="userPerformanceTiming" type="radio" default="0" label="GAANALYTICS_USERPERFORMANCETIMING_LABEL"  description="GAANALYTICS_USERPERFORMANCETIMING_DESCRIPTION" class="btn-group btn-group-yesno">
                     <option value="0">Off</option>
                     <option value="1">On</option>
