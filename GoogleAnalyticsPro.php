@@ -36,21 +36,22 @@ class plgSystemGoogleAnalyticsPro extends JPlugin {
 	function onBeforeCompileHead()
 	{
 		$this->document = JFactory::getDocument();
+
 		if ($this->app->isClient('administrator') || $this->document->getType() != 'html') {
 			return;
 		}
 
 		$output = '';
 
-		if($this->params->get('verify')){
+		if ($this->params->get('verify')){
 			$output .= $this->webmasterVerify();
 		}
 
-		if($this->params->get('trackingID') || $this->params->get('trackingID2')) {
+		if ($this->params->get('trackingID') || $this->params->get('trackingID2')) {
 			$output .= $this->googleAnalyticsTag();
 		}
 
-		if($this->params->get('containerID')) {
+		if ($this->params->get('containerID')) {
 			$output .= $this->googleTagManager();
 		}
 
@@ -63,121 +64,118 @@ class plgSystemGoogleAnalyticsPro extends JPlugin {
 			return;
 		}
 
-		if($this->params->get('containerID')) {
+		if ($this->params->get('containerID')) {
 			$buffer = JFactory::getApplication()->getBody();
-			$noJSOutput = '
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id='.$this->params->get('containerID').'" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>';
+			$noJSOutput = '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id='.$this->params->get('containerID').'" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>';
 			$buffer= str_ireplace('</body>',$noJSOutput.'</body>',$buffer);
 			JFactory::getApplication()->setBody($buffer);
 		}
-		return;
 	}
 
-	private function webmasterVerify() {
+	private function webmasterVerify()
+	{
 		$verify = $this->params->get('verify');
-		$buffer = '<meta name="google-site-verification" content="'.$verify.'" />
-	';
-		return $buffer;
+
+		return '<meta name="google-site-verification" content="'.$verify.'" />';
 	}
 
-	private function userIDTracking() {
+	private function userIDTracking()
+	{
 		$user = JFactory::getUser();
 		
 		return $user->id;
 	}
 
-	private function userPerformanceTiming() {
-			return 'if (window.performance) {
-	var timeSincePageLoad = Math.round(performance.now());
-		gtag(\'event\', \'timing_complete\', {
-		    \'name\': \'load\',
-		    \'value\': timeSincePageLoad,
-		    \'event_category\': \'JS Dependencies\'
-	    });
-    }
-    ';
+	private function userPerformanceTiming()
+	{
+		return 'if (window.performance) {
+			var timeSincePageLoad = Math.round(performance.now());
+			gtag(\'event\', \'timing_complete\', {
+				\'name\': \'load\',
+				\'value\': timeSincePageLoad,
+				\'event_category\': \'JS Dependencies\'
+			});
+		}
+';
 	}
 
 	private function isLoggedIn()
 	{
-		if(JFactory::getUser()->id){
-			return true;
-		};
-		return false;
+		return JFactory::getUser()->id ? true : false;
 	}
 
-	private function googleAnalyticsTag() {
-	$trackingID = $this->params->get('trackingID');
-	$trackingID2 = $this->params->get('trackingID2');
-	$userIDTracking = $this->params->get('userIDTracking');
-	$forceSSL = $this->params->get('forceSSL');
-	$pageviewTracking = $this->params->get('pageviewTracking');
-	$siteCurrency = $this->params->get('siteCurrency');
-	$enhancedLinkAttribution = $this->params->get('enhancedLinkAttribution');
-	$userPerformanceTiming = $this->params->get('userPerformanceTiming');
-	$ipAnonymize = $this->params->get('ipAnonymize');
+	private function googleAnalyticsTag()
+	{
+		$trackingID = $this->params->get('trackingID');
+		$trackingID2 = $this->params->get('trackingID2');
+		$userIDTracking = $this->params->get('userIDTracking');
+		$forceSSL = $this->params->get('forceSSL');
+		$pageviewTracking = $this->params->get('pageviewTracking');
+		$siteCurrency = $this->params->get('siteCurrency');
+		$enhancedLinkAttribution = $this->params->get('enhancedLinkAttribution');
+		$userPerformanceTiming = $this->params->get('userPerformanceTiming');
+		$ipAnonymize = $this->params->get('ipAnonymize');
 
-	$buffer = '
-	<script async src="https://www.googletagmanager.com/gtag/js?id='.$trackingID.'"></script>
-	<script>
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag(\'js\', new Date());
-	';
+		$buffer = '
+		<script async src="https://www.googletagmanager.com/gtag/js?id='.$trackingID.'"></script>
+		<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag(\'js\', new Date());
+		';
 
-	$config = array();
+		$config = array();
 
-	if($userIDTracking && $this->isLoggedIn()){
-		$config['user_id'] = $this->userIDTracking();
-	}
+		if ($userIDTracking && $this->isLoggedIn()){
+			$config['user_id'] = $this->userIDTracking();
+		}
 
-	if($pageviewTracking){
-		$config['send_page_view'] = false;
-	}
+		if ($pageviewTracking){
+			$config['send_page_view'] = false;
+		}
 
-	if($siteCurrency){
-		$config['currency'] = $siteCurrency;
-	}
+		if ($siteCurrency){
+			$config['currency'] = $siteCurrency;
+		}
 
-	if($userPerformanceTiming){
-		$buffer .= $this->userPerformanceTiming();
-	}
+		if ($userPerformanceTiming){
+			$buffer .= $this->userPerformanceTiming();
+		}
 
-	if($enhancedLinkAttribution){
-		$config['link_attribution'] = true;
-	}
+		if ($enhancedLinkAttribution){
+			$config['link_attribution'] = true;
+		}
 
-	if($ipAnonymize){
-		$config['anonymize_ip'] = true;
-	}
+		if ($ipAnonymize){
+			$config['anonymize_ip'] = true;
+		}
 
-	if($forceSSL){
-		$config['forceSSL'] = true;
-	}
+		if ($forceSSL){
+			$config['forceSSL'] = true;
+		}
 
-	$buffer .= 'gtag(\'config\', \''.$trackingID.'\', '.json_encode($config).');
+		$buffer .= '		gtag(\'config\', \''.$trackingID.'\', '.json_encode($config).');
 ';
 
-	if($trackingID2){
-		$buffer .= '	gtag(\'config\', \''.$trackingID2.'\', '.json_encode($config).');
+		if ($trackingID2){
+			$buffer .= '		gtag(\'config\', \''.$trackingID2.'\', '.json_encode($config).');
 ';
-	}
+		}
 
-	$buffer .= '</script>';
+		$buffer .= '		</script>';
 
 		return $buffer;
 	}
 
 	private function googleTagManager() {
 		$containerID = $this->params->get('containerID');
-		$buffer = '
-	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({\'gtm.start\':
-	new Date().getTime(),event:\'gtm.js\'});var f=d.getElementsByTagName(s)[0],
-	j=d.createElement(s),dl=l!=\'dataLayer\'?\'&l=\'+l:\'\';j.async=true;j.src=
-	\'https://www.googletagmanager.com/gtm.js?id=\'+i+dl;f.parentNode.insertBefore(j,f);
-	})(window,document,\'script\',\'dataLayer\',\''.$containerID.'\');</script>
-	';
-		return $buffer;
+
+		return '
+		<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({\'gtm.start\':
+		new Date().getTime(),event:\'gtm.js\'});var f=d.getElementsByTagName(s)[0],
+		j=d.createElement(s),dl=l!=\'dataLayer\'?\'&l=\'+l:\'\';j.async=true;j.src=
+		\'https://www.googletagmanager.com/gtm.js?id=\'+i+dl;f.parentNode.insertBefore(j,f);
+		})(window,document,\'script\',\'dataLayer\',\''.$containerID.'\');</script>';
 	}
 }
 ?>
