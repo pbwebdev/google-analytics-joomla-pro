@@ -23,23 +23,9 @@ defined('_JEXEC') or die('Restricted access');
 
 class plgSystemGoogleAnalyticsPro extends JPlugin {
 
-	var $document = null;
-	private $verify = null;
-	private $trackingID = null;
-	private $trackingID2 = null;
-	private $containerID = null;
-
-	private $userIDTracking = null;
-	private $forceSLL = null;
-	private $pageviewTracking = null;
-	private $siteCurrency = null;
-	private $userPerformanceTiming = null;
-	private $enhancedLinkAttribution = null;
-	private $ipAnonymize = null;
-
-	private $buffer = null;
-	private $output = null;
+	private $document = null;
 	protected $app;
+
 
 	function plgGoogleAnalyticsPro( $subject, $params)
 	{
@@ -54,19 +40,21 @@ class plgSystemGoogleAnalyticsPro extends JPlugin {
 			return;
 		}
 
+		$output = '';
+
 		if($this->params->get('verify')){
-			$this->output .= $this->webmasterVerify();
+			$output .= $this->webmasterVerify();
 		}
 
-		if($this->params->get('trackingID')||$this->params->get('trackingID2')) {
-			$this->output .= $this->googleAnalyticsTag();
+		if($this->params->get('trackingID') || $this->params->get('trackingID2')) {
+			$output .= $this->googleAnalyticsTag();
 		}
 
 		if($this->params->get('containerID')) {
-			$this->output .= $this->googleTagManager();
+			$output .= $this->googleTagManager();
 		}
 
-		$this->document->addCustomTag($this->output);
+		$this->document->addCustomTag($output);
 	}
 
 	function onAfterRender()
@@ -86,32 +74,16 @@ class plgSystemGoogleAnalyticsPro extends JPlugin {
 	}
 
 	private function webmasterVerify() {
-		$this->verify = $this->params->get('verify');
-		$this->buffer = '<meta name="google-site-verification" content="'.$this->verify.'" />
+		$verify = $this->params->get('verify');
+		$buffer = '<meta name="google-site-verification" content="'.$verify.'" />
 	';
-		return $this->buffer;
+		return $buffer;
 	}
 
 	private function userIDTracking() {
 		$user = JFactory::getUser();
 		
 		return $user->id;
-	}
-
-	private function forceSSL() {
-		return 'gtag(\'config\', {\'forceSSL\': true }} );
-	';
-	}
-
-	private function pageviewTracking() {
-		return 'gtag(\'config\', {\'send_page_view\': false} );
-	';
-	}
-
-	private function siteCurrency() {
-		return 'gtag(\'config\', {\'currency\': \''.$this->siteCurrency.'\'});
-	';
-
 	}
 
 	private function userPerformanceTiming() {
@@ -126,16 +98,6 @@ class plgSystemGoogleAnalyticsPro extends JPlugin {
     ';
 	}
 
-	private function enhancedLinkAttribution() {
-		return 'gtag(\'config\', {\'link_attribution\': true} );
-	';
-	}
-
-	private function ipAnonymize() {
-		return 'gtag(\'config\', {\'anonymize_ip\': true} );
-	';
-	}
-
 	private function isLoggedIn()
 	{
 		if(JFactory::getUser()->id){
@@ -145,18 +107,18 @@ class plgSystemGoogleAnalyticsPro extends JPlugin {
 	}
 
 	private function googleAnalyticsTag() {
-	$this->trackingID = $this->params->get('trackingID');
-	$this->trackingID2 = $this->params->get('trackingID2');
-	$this->userIDTracking = $this->params->get('userIDTracking');
-	$this->forceSSL = $this->params->get('forceSSL');
-	$this->pageviewTracking = $this->params->get('pageviewTracking');
-	$this->siteCurrency = $this->params->get('siteCurrency');
-	$this->enhancedLinkAttribution = $this->params->get('enhancedLinkAttribution');
-	$this->userPerformanceTiming = $this->params->get('userPerformanceTiming');
-	$this->ipAnonymize = $this->params->get('ipAnonymize');
+	$trackingID = $this->params->get('trackingID');
+	$trackingID2 = $this->params->get('trackingID2');
+	$userIDTracking = $this->params->get('userIDTracking');
+	$forceSSL = $this->params->get('forceSSL');
+	$pageviewTracking = $this->params->get('pageviewTracking');
+	$siteCurrency = $this->params->get('siteCurrency');
+	$enhancedLinkAttribution = $this->params->get('enhancedLinkAttribution');
+	$userPerformanceTiming = $this->params->get('userPerformanceTiming');
+	$ipAnonymize = $this->params->get('ipAnonymize');
 
-	$this->buffer = '
-	<script async src="https://www.googletagmanager.com/gtag/js?id='.$this->trackingID.'"></script>
+	$buffer = '
+	<script async src="https://www.googletagmanager.com/gtag/js?id='.$trackingID.'"></script>
 	<script>
 	window.dataLayer = window.dataLayer || [];
 	function gtag(){dataLayer.push(arguments);}
@@ -165,57 +127,57 @@ class plgSystemGoogleAnalyticsPro extends JPlugin {
 
 	$config = array();
 
-	if($this->userIDTracking && $this->isLoggedIn()){
+	if($userIDTracking && $this->isLoggedIn()){
 		$config['user_id'] = $this->userIDTracking();
 	}
 
-	if($this->pageviewTracking){
+	if($pageviewTracking){
 		$config['send_page_view'] = false;
 	}
 
-	if($this->siteCurrency){
-		$config['currency'] = $this->siteCurrency;
+	if($siteCurrency){
+		$config['currency'] = $siteCurrency;
 	}
 
-	if($this->userPerformanceTiming){
-		$this->buffer .= $this->userPerformanceTiming();
+	if($userPerformanceTiming){
+		$buffer .= $this->userPerformanceTiming();
 	}
 
-	if($this->enhancedLinkAttribution){
+	if($enhancedLinkAttribution){
 		$config['link_attribution'] = true;
 	}
 
-	if($this->ipAnonymize){
+	if($ipAnonymize){
 		$config['anonymize_ip'] = true;
 	}
 
-	if($this->forceSSL){
+	if($forceSSL){
 		$config['forceSSL'] = true;
 	}
 
-	$this->buffer .= 'gtag(\'config\', \''.$this->trackingID.'\', '.json_encode($config).');
+	$buffer .= 'gtag(\'config\', \''.$trackingID.'\', '.json_encode($config).');
 ';
 
-	if($this->trackingID2){
-		$this->buffer .= '	gtag(\'config\', \''.$this->trackingID2.'\', '.json_encode($config).');
+	if($trackingID2){
+		$buffer .= '	gtag(\'config\', \''.$trackingID2.'\', '.json_encode($config).');
 ';
 	}
 
-	$this->buffer .= '</script>';
+	$buffer .= '</script>';
 
-		return $this->buffer;
+		return $buffer;
 	}
 
 	private function googleTagManager() {
-		$this->containerID = $this->params->get('containerID');
-		$this->buffer = '
+		$containerID = $this->params->get('containerID');
+		$buffer = '
 	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({\'gtm.start\':
 	new Date().getTime(),event:\'gtm.js\'});var f=d.getElementsByTagName(s)[0],
 	j=d.createElement(s),dl=l!=\'dataLayer\'?\'&l=\'+l:\'\';j.async=true;j.src=
 	\'https://www.googletagmanager.com/gtm.js?id=\'+i+dl;f.parentNode.insertBefore(j,f);
-	})(window,document,\'script\',\'dataLayer\',\''.$this->containerID.'\');</script>
+	})(window,document,\'script\',\'dataLayer\',\''.$containerID.'\');</script>
 	';
-		return $this->buffer;
+		return $buffer;
 	}
 }
 ?>
