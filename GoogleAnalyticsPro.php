@@ -94,11 +94,8 @@ class plgSystemGoogleAnalyticsPro extends JPlugin {
 
 	private function userIDTracking() {
 		$user = JFactory::getUser();
-		$userID = $user->id;
-		if($userID){
-			return 'gtag(\'set\', {\'user_id\': \''.$userID.'\'});
-	';
-		}
+		
+		return $user->id;
 	}
 
 	private function forceSSL() {
@@ -166,16 +163,18 @@ class plgSystemGoogleAnalyticsPro extends JPlugin {
 	gtag(\'js\', new Date());
 	';
 
+	$config = array();
+
 	if($this->userIDTracking && $this->isLoggedIn()){
-		$this->buffer .= $this->userIDTracking();
+		$config['user_id'] = $this->userIDTracking();
 	}
 
 	if($this->pageviewTracking){
-		$this->buffer .= $this->pageviewTracking();
+		$config['send_page_view'] = false;
 	}
 
 	if($this->siteCurrency){
-		$this->buffer .= $this->siteCurrency();
+		$config['currency'] = $this->siteCurrency;
 	}
 
 	if($this->userPerformanceTiming){
@@ -183,26 +182,27 @@ class plgSystemGoogleAnalyticsPro extends JPlugin {
 	}
 
 	if($this->enhancedLinkAttribution){
-		$this->buffer .= $this->enhancedLinkAttribution();
+		$config['link_attribution'] = true;
 	}
 
 	if($this->ipAnonymize){
-	  $this->buffer .= $this->ipAnonymize();
+		$config['anonymize_ip'] = true;
 	}
 
 	if($this->forceSSL){
-	  $this->buffer .= $this->forceSSL();
+		$config['forceSSL'] = true;
 	}
 
-	  $this->buffer .= 'gtag(\'config\', \''.$this->trackingID.'\');
+	$this->buffer .= 'gtag(\'config\', \''.$this->trackingID.'\', '.json_encode($config).');
 ';
 
 	if($this->trackingID2){
-		$this->buffer .= 'gtag(\'config\', \''.$this->trackingID2.'\');';
+		$this->buffer .= '	gtag(\'config\', \''.$this->trackingID2.'\', '.json_encode($config).');
+';
 	}
 
-	$this->buffer .= '</script>
-		';
+	$this->buffer .= '</script>';
+
 		return $this->buffer;
 	}
 
